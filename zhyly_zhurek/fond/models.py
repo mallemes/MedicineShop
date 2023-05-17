@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User, AbstractUser
 from django.db import models
 from django.db.models.signals import post_save
+from django.urls import reverse
 
 
 # class MyUser(models.Model):
@@ -26,10 +27,12 @@ class MyUser(AbstractUser):
 
 class Category(models.Model):
     name = models.CharField(max_length=250)
+    slug = models.SlugField(unique=True, null=True, blank=True)
+    poster = models.ImageField(null=True, blank=True, upload_to="category/photos/")
     created_at = models.DateTimeField(auto_now_add=True)
 
-    # def get_absolute_url(self):
-    #     return reverse('show_quiz', kwargs={"pk": self.pk})
+    def get_absolute_url(self):
+        return reverse('category', kwargs={"slug": self.slug})
 
     def __str__(self):
         return self.name
@@ -40,6 +43,8 @@ class Patient(models.Model):
     photo = models.ImageField(null=True, blank=True, upload_to="patient/photos/")
     description = models.TextField()
     address = models.CharField(max_length=250)
+    moneySum = models.IntegerField(default=579000)
+    jinalgany = models.IntegerField(default=123870)
     age = models.IntegerField(null=True, blank=True)
     disease = models.CharField(max_length=250)  # болезнь
     isInvalid = models.BooleanField(default=True)
@@ -47,8 +52,8 @@ class Patient(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     users = models.ManyToManyField(MyUser, through="Fond")
 
-    # def get_absolute_url(self):
-    #     return reverse('show_quiz', kwargs={"pk": self.pk})
+    def get_absolute_url(self):
+        return reverse('single_patient', kwargs={"cat_slug": self.category.slug, "pk": self.pk})
 
     def __str__(self):
         return self.fullName

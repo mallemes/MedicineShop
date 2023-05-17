@@ -3,17 +3,31 @@ from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.views import LoginView
+from django.core.paginator import Paginator
 from django.http import HttpResponseNotFound
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
-from django.views.generic import TemplateView, CreateView
+from django.views.generic import TemplateView, CreateView, DetailView, ListView
 
 from fond.forms import RegisterForm
+from fond.models import Category, Patient
 from fond.utils import DataMixin
 
 
 def pageNotFound(request, exception):
     return HttpResponseNotFound('<h1>page not found</h1>')
+
+
+class ElectronicaShowView(DataMixin, ListView):
+    model = Patient
+    template_name = "fond/all_cats.html"
+    context_object_name = "patients"
+    paginate_by = 3
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        mixin = self.get_user_context(title='patients')
+        return dict(list(context.items()) + list(mixin.items()))
 
 
 class IndexView(DataMixin, TemplateView):
@@ -42,12 +56,12 @@ class ContactView(DataMixin, TemplateView):
 class ProfileView(DataMixin, TemplateView):
     template_name = "fond/profile.html"
 
-    # def post(self, request, **kwargs):
-    #     my_bln = request.POST.get("balance")
-    #     if my_bln:
-    #         request.user.balance = my_bln
-    #         request.user.save()
-    #     return redirect('profile')
+    def post(self, request, **kwargs):
+        my_bln = request.POST.get("balance")
+        if my_bln:
+            request.user.balance = my_bln
+            request.user.save()
+        return redirect('profile')
 
 
 class Register(DataMixin, CreateView):
@@ -77,3 +91,46 @@ def costumerLogout(request):
     logout(request)
     messages.error(request, "success log out")
     return redirect("/")
+
+
+class CategoryView(DataMixin, DetailView):
+    model = Category
+    template_name = "fond/detail_cat.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(CategoryView, self).get_context_data(**kwargs)
+        activ = self.data()
+        context['page_obj'] = activ
+        mixin = self.get_user_context(title="category")
+        return dict(list(context.items()) + list(mixin.items()))
+
+    def data(self):
+        queryset = self.object.patient_set.all()
+        paginator = Paginator(queryset, 3)
+        page = self.request.GET.get('page')
+        activities = paginator.get_page(page)
+        return activities
+
+
+class SingleElectronicaView(DataMixin, DetailView):
+    model = Patient
+    template_name = "fond/single_patient.html"
+    context_object_name = "patient"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        mixin = self.get_user_context(title="patient")
+        return dict(list(context.items()) + list(mixin.items()))
+
+    # def post(self, request, **kwargs):
+    #     my_data = request.POST
+    #     user = request.user
+    #     newCart = Order()
+    #     newCart.costumer = user
+    #     newCart.made_in = my_data.get("country", None)
+    #     if my_data.get("country") == "S":
+    #         newCart.made_in = "China"
+    #     newCart.quantity = my_data.get("quantity", None)
+    #     newCart.product = Electronica.objects.get(pk=my_data.get("product_id", None))
+    #     newCart.save()
+    #     return redirect('order')
