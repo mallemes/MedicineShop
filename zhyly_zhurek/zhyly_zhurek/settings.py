@@ -121,7 +121,13 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 LOGIN_URL = 'myLogin'
 LOGIN_REDIRECT_URL = "profile"
 LOGOUT_REDIRECT_URL = "index"
+from django.contrib.messages import constants as message_constants
 
+MESSAGE_TAGS = {message_constants.DEBUG: 'debug',
+                message_constants.INFO: 'info',
+                message_constants.SUCCESS: 'success',
+                message_constants.WARNING: 'warning',
+                message_constants.ERROR: 'danger', }
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'fond.MyUser'

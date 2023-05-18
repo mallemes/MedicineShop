@@ -10,7 +10,7 @@ from django.urls import reverse_lazy
 from django.views.generic import TemplateView, CreateView, DetailView, ListView
 
 from fond.forms import RegisterForm
-from fond.models import Category, Patient
+from fond.models import Category, Patient, Fond, MyUser, Comment
 from fond.utils import DataMixin
 
 
@@ -122,15 +122,30 @@ class SingleElectronicaView(DataMixin, DetailView):
         mixin = self.get_user_context(title="patient")
         return dict(list(context.items()) + list(mixin.items()))
 
-    # def post(self, request, **kwargs):
-    #     my_data = request.POST
-    #     user = request.user
-    #     newCart = Order()
-    #     newCart.costumer = user
-    #     newCart.made_in = my_data.get("country", None)
-    #     if my_data.get("country") == "S":
-    #         newCart.made_in = "China"
-    #     newCart.quantity = my_data.get("quantity", None)
-    #     newCart.product = Electronica.objects.get(pk=my_data.get("product_id", None))
-    #     newCart.save()
-    #     return redirect('order')
+    def post(self, request, **kwargs):
+        comment = request.POST.get("comment", None)
+        my_data = request.POST
+        user = request.user
+        pat = Patient.objects.get(pk=my_data.get("patient_id", None))
+        if comment:
+            com = Comment()
+            com.patient = pat
+            com.user = user
+            com.message = comment
+            com.save()
+        if not my_data.get("money"):
+            messages.error(request, "qarazhat engiz.")
+            return redirect(pat.get_absolute_url())
+        if user.balance < int(my_data.get("money")):
+            messages.error(request, "qarazhatynyz zhetkiliksiz.")
+            return redirect('profile')
+
+        fond = Fond.objects.filter(user=user, patient=pat)
+        if not fond:
+            user.balance = user.balance - int(my_data.get("money"))
+            user.save()
+            ff = Fond(user=user, patient=pat)
+            ff.save()
+        pat.jinalgany = pat.jinalgany + int(my_data.get("money"))
+        pat.save()
+        return redirect(pat.get_absolute_url())

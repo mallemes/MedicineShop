@@ -72,58 +72,43 @@
 
                             <h6>Tolyq akparat:</h6>
                             <p>{{ patient.description }}</p>
-                            <ul class="list-inline">
-                                <li class="list-inline-item">
-                                    <h6>Count:</h6>
-                                </li>
-                                <li class="list-inline-item">
-                                    <p class="text-muted"><strong>{{ product.count }}</strong></p>
-                                </li>
-                            </ul>
+
                             {% if user.is_authenticated %}
-
-
+                                {% if patient.moneySum > patient.jinalgany %}
+                                    <form method="post">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="patient_id" value="{{ patient.pk }}">
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <div class="col d-grid">
+                                                    <label> Qarazhat salu <br>
+                                                        <input name="money" type="number" placeholder="Qarazhat engiz:"
+                                                               class="form-control">
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row pb-3 mt-3">
+                                            <div class="col d-grid">
+                                                <button type="submit" class="btn btn-success btn-lg" name="submit"
+                                                        value="addtocard">Jiberu
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                {% else %}
+                                    <h1 style="color:red;" class="text-center">Qarajan tolyqtay zhinaldy</h1>
+                                {% endif %}
+                                <center><h3>comment qaldyru</h3></center>
                                 <form method="post">
+                                    <input type="hidden" name="patient_id" value="{{ patient.pk }}">
                                     {% csrf_token %}
-                                    <input type="hidden" name="product_id" value="{{ product.pk }}">
-                                    <div class="row">
-                                        <div class="col-auto">
-                                            <ul class="list-inline pb-3">
-                                                <li class="list-inline-item">Country :
-                                                    <input type="hidden" name="country" id="product-size" value="S">
-                                                </li>
-                                                <li class="list-inline-item"><span
-                                                        class="btn btn-success btn-size">USA</span></li>
-                                                <li class="list-inline-item"><span class="btn btn-success btn-size">China</span>
-                                                </li>
-                                                <li class="list-inline-item"><span class="btn btn-success btn-size">Germany</span>
-                                                </li>
-                                                <li class="list-inline-item"><span class="btn btn-success btn-size">Japan</span>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                        <div class="col-auto">
-                                            <ul class="list-inline pb-3">
-                                                <li class="list-inline-item text-right">
-                                                    Quantity
-                                                    <input type="hidden" name="quantity" id="product-quanity" value="1">
-                                                </li>
-                                                <li class="list-inline-item"><span class="btn btn-success"
-                                                                                   id="btn-minus">-</span></li>
-                                                <li class="list-inline-item"><span class="badge bg-secondary"
-                                                                                   id="var-value">1</span></li>
-                                                <li class="list-inline-item"><span class="btn btn-success"
-                                                                                   id="btn-plus">+</span></li>
-                                            </ul>
-                                        </div>
+                                    <div class="mb-3">
+                                        <label for="exampleInputPassword1" class="form-label">comment</label>
+                                        <textarea name="comment" id="exampleInputPassword1"
+                                                  class="form-control"></textarea>
                                     </div>
-                                    <div class="row pb-3">
-                                        <div class="col d-grid">
-                                            <button type="submit" class="btn btn-success btn-lg" name="submit"
-                                                    value="addtocard">Add To Cart
-                                            </button>
-                                        </div>
-                                    </div>
+                                    <button type="submit" class="btn btn-outline-primary">qosu</button>
                                 </form>
                             {% endif %}
                         </div>
@@ -131,6 +116,35 @@
                 </div>
             </div>
         </div>
+        <center><h3>comments</h3></center>
+        <hr>
+        <div class="container">
+            <ul class="p-0">
+                {% for comment in patient.comment_set.all %}
+
+                    <li>
+                        <div class="row comments mb-2">
+                            <div class="col-md-2 offset-md-2 col-sm-2 offset-sm-2 col-3 offset-1 text-center user-img">
+                                <img id="profile-photo" width="60" height="60"
+                                     src="http://nicesnippets.com/demo/man02.png"
+                                     class="rounded-circle"/>
+                            </div>
+                            <div class="col-md-7 col-sm-7 col-8 comment rounded mb-2">
+                                <div style="display: flex; justify-content: space-between">
+                                    <h4 class="m-0"><a href="#" style="color: #000000">{{ comment.user }}</a></h4>
+                                    <time class="text-black-50 ml-3">{{ comment.created_at|date:"SHORT_DATE_FORMAT" }}</time>
+                                </div>
+
+                                <p class="mb-0 text-red">{{ comment.message }}</p>
+                            </div>
+                        </div>
+                    </li>
+
+                    <hr>
+                {% endfor %}
+            </ul>
+        </div>
+        <br><br><br>
     </section>
     <!-- Close Content -->
 

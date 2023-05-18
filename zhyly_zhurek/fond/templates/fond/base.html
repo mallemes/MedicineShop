@@ -70,9 +70,9 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'about' %}">About</a>
                     </li>
-                    {#                    <li class="nav-item">#}
-                    {#                        <a class="nav-link" href="{% url 'electronics' %}">Shop</a>#}
-                    {#                    </li>#}
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="{% url 'patients' %}">Naukastar</a>
+                                        </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'contact' %}">Contact</a>
                     </li>
@@ -91,18 +91,6 @@
                 </ul>
             </div>
             <div class="navbar align-self-center d-flex">
-                {#                <div class="d-lg-none flex-sm-fill mt-3 mb-4 col-7 col-sm-auto pr-3">#}
-                {#                    <div class="input-group">#}
-                {#                        <input type="text" class="form-control" id="inputMobileSearch" placeholder="Search ...">#}
-                {#                        <div class="input-group-text">#}
-                {#                            <i class="fa fa-fw fa-search"></i>#}
-                {#                        </div>#}
-                {#                    </div>#}
-                {#                </div>#}
-                {#                <a class="nav-icon d-none d-lg-inline" href="#" data-bs-toggle="modal"#}
-                {#                   data-bs-target="#templatemo_search">#}
-                {#                    <i class="fa fa-fw fa-search text-dark mr-2"></i>#}
-                {#                </a>#}
                 {% if  user.is_authenticated %}
                     <a class="nav-icon position-relative text-decoration-none" href="{% url 'profile' %}">
                         <i class="fa fa-fw fa-user text-dark mr-3"></i>
@@ -114,27 +102,19 @@
 
     </div>
 </nav>
-<!-- Close Header -->
 
-<!-- Modal -->
-<div class="modal fade bg-white" id="templatemo_search" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-     aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="w-100 pt-1 mb-5 text-right">
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <form action="" method="get" class="modal-content modal-body border-0 p-0">
-            <div class="input-group mb-2">
-                <input type="text" class="form-control" id="inputModalSearch" name="q" placeholder="Search ...">
-                <button type="submit" class="input-group-text bg-success text-light">
-                    <i class="fa fa-fw fa-search text-white"></i>
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
 {% block base %}
-
+    {% if messages %}
+        <div class="row">
+            <div class="col-sm-12 col-sm-offset-3">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        <p>{{ message }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
 {% endblock %}
 <footer class="bg-dark" id="tempaltemo_footer">
     <div class="container">
